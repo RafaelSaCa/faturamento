@@ -1,5 +1,7 @@
 package com.rafaelsaca.faturamento.dto;
 
+import com.rafaelsaca.faturamento.model.Endereco;
+
 public class ClienteResponse {
 
     public Long id;
@@ -7,13 +9,12 @@ public class ClienteResponse {
     public String cpfCnpj;
     public String email;
     public String telefone;
-    public String endereco;
+    public Endereco endereco;
 
     public ClienteResponse() {
-
     }
 
-    public ClienteResponse(Long id, String nome, String cpfCnpj, String email, String telefone, String endereco) {
+    public ClienteResponse(Long id, String nome, String cpfCnpj, String email, String telefone, Endereco endereco) {
         this.id = id;
         this.nome = nome;
         this.cpfCnpj = cpfCnpj;
@@ -21,4 +22,5 @@ public class ClienteResponse {
         this.telefone = telefone;
         this.endereco = endereco;
     }
+
 }
