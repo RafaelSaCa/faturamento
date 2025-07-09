@@ -31,10 +31,10 @@ public class ClienteService {
             throw new RuntimeException("Cliente já cadastrado com o CPF/CNPJ: " + request.getCpfCnpj());
         }
 
-        Endereco endereco = viaCepService.buscarEnderecoPorCep(request.getCpfCnpj());
+        Endereco endereco = viaCepService.buscarEnderecoPorCep(request.getCep());
 
         if (endereco == null) {
-            throw new RuntimeException("Endereço não encontrado para o CEP: " + request.getCpfCnpj());
+            throw new RuntimeException("Endereço não encontrado para o CEP: " + request.getCep());
         }
 
         endereco.setNumero(request.getNumero());
@@ -59,22 +59,40 @@ public class ClienteService {
         Cliente cliente = repository.findById(clienteId)
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado com o ID: " + clienteId));
 
-        if (repository.findByCpfCnpj(request.getCpfCnpj()).isPresent()
-                && !repository.findByCpfCnpj(request.getCpfCnpj()).get().getId().equals(clienteId)) {
-            throw new RuntimeException("Já existe um cliente cadastrado com o CPF/CNPJ: " + request.getCpfCnpj());
+        if (request.getNome() != null && !request.getNome().isBlank()) {
+            cliente.setNome(request.getNome());
         }
 
-        Endereco endereco = viaCepService.buscarEnderecoPorCep(request.getCep());
-        if (endereco == null) {
-            throw new RuntimeException("Endereço não encontrado para o CEP: " + request.getCep());
-        }
-        endereco.setNumero(request.getNumero());
+        if (request.getCpfCnpj() != null && !request.getCpfCnpj().isBlank()) {
+            if (repository.findByCpfCnpj(request.getCpfCnpj()).isPresent()
+                    && !repository.findByCpfCnpj(request.getCpfCnpj()).get().getId().equals(clienteId)) {
+                throw new RuntimeException("Já existe um cliente cadastrado com o CPF/CNPJ: " + request.getCpfCnpj());
+            }
 
-        cliente.setNome(request.getNome());
-        cliente.setCpfCnpj(request.getCpfCnpj());
-        cliente.setEmail(request.getEmail());
-        cliente.setTelefone(request.getTelefone());
-        cliente.setEndereco(endereco);
+            cliente.setCpfCnpj(request.getCpfCnpj());
+        }
+
+        if (request.getEmail() != null && !request.getEmail().isBlank()) {
+            cliente.setEmail(request.getEmail());
+        }
+
+        if (request.getTelefone() != null && !request.getTelefone().isBlank()) {
+            cliente.setTelefone(request.getTelefone());
+        }
+
+        if (request.getCep() != null && !request.getCep().isBlank()) {
+
+            Endereco endereco = viaCepService.buscarEnderecoPorCep(request.getCep());
+
+            if (endereco == null) {
+                throw new RuntimeException("Endereço não encontrado para o CEP: " + request.getCep());
+            }
+            cliente.setEndereco(endereco);
+        }
+
+        if (request.getNumero() != null && !request.getNumero().isBlank()) {
+           cliente.getEndereco().setNumero(request.getNumero());
+        }
 
         Cliente clienteAtualizado = repository.save(cliente);
         return mapper.toResponse(clienteAtualizado);
