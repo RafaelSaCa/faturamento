@@ -1,15 +1,13 @@
 package com.rafaelsaca.faturamento.service;
 
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
-import javax.management.RuntimeErrorException;
 
 import org.springframework.stereotype.Service;
 
 import com.rafaelsaca.faturamento.dto.CobrancaRequest;
 import com.rafaelsaca.faturamento.dto.CobrancaResponse;
+import com.rafaelsaca.faturamento.exception.RecursoNaoEncontradoException;
 import com.rafaelsaca.faturamento.mapper.CobrancaMapper;
 import com.rafaelsaca.faturamento.model.Cliente;
 import com.rafaelsaca.faturamento.model.Cobranca;
@@ -51,6 +49,18 @@ public class CobrancaService {
                     .stream()
                     .map(mapper::toResponse)
                     .collect(Collectors.toList());
+    }
+
+    public List<CobrancaResponse> findByClienteId (Long clienteId){
+        clienteRepository.findById(clienteId)
+            .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente com id " + clienteId + ", não encontrado!"));
+
+
+        List<Cobranca> cobrancas = repository.findByClienteId(clienteId);
+
+        return cobrancas.stream()
+                        .map(mapper::toResponse)
+                        .collect(Collectors.toList());
     }
 
 
