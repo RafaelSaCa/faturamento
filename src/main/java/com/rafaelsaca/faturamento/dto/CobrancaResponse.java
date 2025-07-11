@@ -9,14 +9,24 @@ import com.rafaelsaca.faturamento.model.Cobranca.Tipo;
 
 public class CobrancaResponse {
 
+    private Long id;
     private BigDecimal valor;
     private String descricao;
     private LocalDate dataVencimento;
     private Tipo tipo;
     private Status status;
     private Cliente cliente;
+    private String pdfUrl;
 
     public CobrancaResponse() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public BigDecimal getValor() {
@@ -65,6 +75,14 @@ public class CobrancaResponse {
 
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
+    }
+
+    public String getPdfUrl() {
+        return pdfUrl;
+    }
+
+    public void setPdfUrl(String pdfUrl) {
+        this.pdfUrl = pdfUrl;
     }
 
 }
