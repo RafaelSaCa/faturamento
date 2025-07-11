@@ -1,6 +1,10 @@
 package com.rafaelsaca.faturamento.service;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -22,7 +26,8 @@ public class CobrancaService {
     private final ClienteRepository clienteRepository;
     private final CobrancaMapper mapper;
 
-    public CobrancaService(CobrancaRepository repository, ClienteRepository clienteRepository, CobrancaMapper mapper) {
+    public CobrancaService(CobrancaRepository repository, ClienteRepository clienteRepository,
+            CobrancaMapper mapper) {
         this.repository = repository;
         this.clienteRepository = clienteRepository;
         this.mapper = mapper;
@@ -38,30 +43,37 @@ public class CobrancaService {
         cobranca.setStatus(Status.PENDENTE);
 
         Cobranca novaCobranca = repository.save(cobranca);
+    
 
         return mapper.toResponse(novaCobranca);
 
     }
 
+    public CobrancaResponse findById(Long cobrancaId) {
+        Cobranca cobranca = repository.findById(cobrancaId)
+                .orElseThrow(
+                        () -> new RecursoNaoEncontradoException("Cobrança com id: " + cobrancaId + ",não encontrada!"));
 
-    public List<CobrancaResponse> findAll (){
-        return repository.findAll()
-                    .stream()
-                    .map(mapper::toResponse)
-                    .collect(Collectors.toList());
+        return mapper.toResponse(cobranca);
     }
 
-    public List<CobrancaResponse> findByClienteId (Long clienteId){
-        clienteRepository.findById(clienteId)
-            .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente com id " + clienteId + ", não encontrado!"));
+    public List<CobrancaResponse> findAll() {
+        return repository.findAll()
+                .stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
+    }
 
+    public List<CobrancaResponse> findByClienteId(Long clienteId) {
+        clienteRepository.findById(clienteId)
+                .orElseThrow(
+                        () -> new RecursoNaoEncontradoException("Cliente com id " + clienteId + ", não encontrado!"));
 
         List<Cobranca> cobrancas = repository.findByClienteId(clienteId);
 
         return cobrancas.stream()
-                        .map(mapper::toResponse)
-                        .collect(Collectors.toList());
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
     }
-
 
 }
