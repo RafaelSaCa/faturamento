@@ -16,7 +16,7 @@ public class CobrancaResponse {
     private Tipo tipo;
     private Status status;
     private Cliente cliente;
-    private String pdfUrl;
+    private String pdfPath;
 
     public CobrancaResponse() {
     }
@@ -77,12 +77,12 @@ public class CobrancaResponse {
         this.cliente = cliente;
     }
 
-    public String getPdfUrl() {
-        return pdfUrl;
+    public String getPdfPath() {
+        return pdfPath;
     }
 
-    public void setPdfUrl(String pdfUrl) {
-        this.pdfUrl = pdfUrl;
+    public void setPdfPath(String pdfPath) {
+        this.pdfPath = pdfPath;
     }
 
 }
