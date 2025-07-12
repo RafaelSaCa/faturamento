@@ -2,6 +2,8 @@ package com.rafaelsaca.faturamento.service;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.time.format.DateTimeFormatter;
 
 import javax.imageio.ImageIO;
@@ -17,23 +19,30 @@ import com.lowagie.text.Font;
 import com.lowagie.text.Image;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.pdf.PdfWriter;
-import com.rafaelsaca.faturamento.dto.CobrancaResponse;
+import com.rafaelsaca.faturamento.model.Cobranca;
 
 @Service
 public class PDFService {
 
   
-    public byte[] gerarCobrancaPDF(CobrancaResponse cobranca) throws Exception {
+    public String gerarCobrancaPDF(Cobranca cobranca) throws Exception {
 
-        ByteArrayOutputStream arrayByte = new ByteArrayOutputStream();
+        String nomeArquivo ="fatura_" + cobranca.getId() + ".pdf";
+        String diretorio = "cobrancas/pdf";
+        File pasta = new File (diretorio);
+        if (!pasta.exists()) pasta.mkdirs();
+
+        String caminhoCompleto = diretorio + "/" + nomeArquivo;
+
+    
         Document doc = new Document();
-        PdfWriter.getInstance(doc, arrayByte);
+        PdfWriter.getInstance(doc, new FileOutputStream(caminhoCompleto));
         doc.open();
 
         Font tituloFont = new Font(Font.HELVETICA, 16, Font.BOLD);
         Font normalFont = new Font(Font.HELVETICA, 12);
 
-        doc.add(new Paragraph("        COBRANÇA     ", tituloFont));
+        doc.add(new Paragraph("COBRANÇA", tituloFont));
         doc.add(new Paragraph(""));
 
 
@@ -66,7 +75,7 @@ public class PDFService {
         }
 
         doc.close();
-        return arrayByte.toByteArray();
+        return caminhoCompleto;
     }
 
     public Image gerarImagemQRCode(String texto) throws Exception {
