@@ -20,6 +20,7 @@ public class Cobranca {
     private LocalDate dataVencimento;
     private Status status;
     private Tipo tipo;
+    private String pdfPath;
 
     @ManyToOne
     private Cliente cliente;
@@ -28,13 +29,14 @@ public class Cobranca {
     }
 
     public Cobranca(Long id, BigDecimal valor, String descricao, LocalDate dataVencimento, Status status, Tipo tipo,
-            Cliente cliente) {
+            String pdfPath, Cliente cliente) {
         this.id = id;
         this.valor = valor;
         this.descricao = descricao;
         this.dataVencimento = dataVencimento;
         this.status = status;
         this.tipo = tipo;
+        this.pdfPath = pdfPath;
         this.cliente = cliente;
     }
 
@@ -105,5 +107,13 @@ public class Cobranca {
         BOLETO,
         PIX,
         LINK_CARTAO
+    }
+
+    public String getPdfPath() {
+        return pdfPath;
+    }
+
+    public void setPdfPath(String pdfPath) {
+        this.pdfPath = pdfPath;
     }
 }
