@@ -1,10 +1,6 @@
 package com.rafaelsaca.faturamento.service;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -25,12 +21,16 @@ public class CobrancaService {
     private final CobrancaRepository repository;
     private final ClienteRepository clienteRepository;
     private final CobrancaMapper mapper;
+    private final PDFService pdfService;
+    private final EmailService emailService;
 
     public CobrancaService(CobrancaRepository repository, ClienteRepository clienteRepository,
-            CobrancaMapper mapper) {
+            CobrancaMapper mapper, PDFService pdfService, EmailService emailService) {
         this.repository = repository;
         this.clienteRepository = clienteRepository;
         this.mapper = mapper;
+        this.pdfService = pdfService;
+        this.emailService = emailService;
     }
 
     public CobrancaResponse create(CobrancaRequest request) {
@@ -43,8 +43,18 @@ public class CobrancaService {
         cobranca.setStatus(Status.PENDENTE);
 
         Cobranca novaCobranca = repository.save(cobranca);
-    
+        
+        try{
+            String pdfPath = pdfService.gerarCobrancaPDF(novaCobranca);
+            novaCobranca.setPdfPath(pdfPath);
+            repository.save(novaCobranca);
 
+            emailService.enviarCobrancaPorEmail(cliente, pdfPath);
+            
+        }catch (Exception e){
+            throw new RuntimeException("Erro ao gerar PDF:"+ e.getMessage());
+
+        }
         return mapper.toResponse(novaCobranca);
 
     }
